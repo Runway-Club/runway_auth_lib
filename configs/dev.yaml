@@ -1,0 +1,16 @@
+jwt_secret: "slhfdl48972bkjcxsdsd331@klhjdks9"
+password:
+  # set policy for password
+  # level1: minimum 8 characters
+  # level2: minimum 8 characters, >= 1 number
+  # level3: minimum 8 characters, >= 1 number, >= 1 special character, >= 1 uppercase letter, >= 1 lowercase letter
+  policy: "level1"
+  # set cost for password
+  # default|min|max
+  cost: "default"
+# default user created when app start
+static_users:
+  - username: "admin"
+    password: "admin"
+  - username: "admin2"
+    password: "admin2"
