@@ -1,16 +1,39 @@
-jwt_secret: "slhfdl48972bkjcxsdsd331@klhjdks9"
-password:
-  # set policy for password
-  # level1: minimum 8 characters
-  # level2: minimum 8 characters, >= 1 number
-  # level3: minimum 8 characters, >= 1 number, >= 1 special character, >= 1 uppercase letter, >= 1 lowercase letter
-  policy: "level1"
-  # set cost for password
-  # default|min|max
-  cost: "default"
-# default user created when app start
-static_users:
-  - username: "admin"
-    password: "admin"
-  - username: "admin2"
-    password: "admin2"
+runway_auth:
+  default_role_id: "default"
+  jwt:
+    secret: "slhfdl48972bkjcxsdsd331@klhjdks9"
+    # set expiration time for token in seconds
+    exp: 3600
+    issuer: "runwayclub.dev"
+  password:
+    # set policy for password
+    # level1: minimum 8 characters
+    # level2: minimum 8 characters, >= 1 number
+    # level3: minimum 8 characters, >= 1 number, >= 1 special character, >= 1 uppercase letter, >= 1 lowercase letter
+    policy: "level1"
+    # set cost for password
+    # default|min|max
+    cost: "default"
+  # default user created when app start
+  # static users can bypass ACL
+  static_users:
+    - username: "admin"
+      password: "admin"
+      role: "admin"
+  acl:
+    - id: "0"
+      description: "Everyone can get courses"
+      resource: "v1/course.GET"
+    - id: "1"
+      description: "Only admin can edit course"
+      resource: "v1/course.PUT"
+      roleId: "admin"
+    - id: "2"
+      description: "Only admin can delete course"
+      resource: "v1/course.DELETE"
+      roleId: "admin"
+    - id: "3"
+      description: "User id: test can edit course id: demo"
+      resource: "v1/course.PUT"
+      payload: "demo"
+      userId: "test"

@@ -2,8 +2,8 @@ package repo
 
 import (
 	"context"
+	"github.com/Runway-Club/auth_lib/domain"
 	"gorm.io/gorm"
-	"runwayclub.dev/auth/domain"
 )
 
 type AuthRepository struct {

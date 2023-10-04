@@ -2,9 +2,9 @@ package repo_test
 
 import (
 	"context"
+	"github.com/Runway-Club/auth_lib/domain"
+	"github.com/Runway-Club/auth_lib/internal/auth/repo"
 	"gorm.io/driver/sqlite"
-	"runwayclub.dev/auth/domain"
-	"runwayclub.dev/auth/internal/auth/repo"
 	"testing"
 )
 
