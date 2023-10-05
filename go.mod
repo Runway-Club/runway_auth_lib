@@ -1,6 +1,6 @@
 module github.com/Runway-Club/auth_lib
 
-go 1.23
+go 1.21
 
 require (
 	firebase.google.com/go/v4 v4.12.1
