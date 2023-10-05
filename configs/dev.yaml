@@ -17,9 +17,10 @@ runway_auth:
   # default user created when app start
   # static users can bypass ACL
   static_users:
-    - username: "admin"
-      password: "admin"
-      role: "admin"
+    - id: "admin"
+      username: "admin"
+      password: "Adminpassword@123"
+      role_id: "admin"
   acl:
     - id: "0"
       description: "Everyone can get courses"

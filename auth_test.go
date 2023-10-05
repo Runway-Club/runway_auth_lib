@@ -92,4 +92,14 @@ func TestAuth(t *testing.T) {
 		}
 
 	})
+	t.Run("bypass with admin user", func(t *testing.T) {
+		token, err := auth.SignIn(context.Background(), "admin", "Adminpassword@123")
+		if err != nil {
+			t.Error(err)
+		}
+		result := auth.VerifyTokenAndPerm(context.Background(), token.Jwt, "v1/payment.POST", "")
+		if result != nil {
+			t.Error("expected true, got false")
+		}
+	})
 }

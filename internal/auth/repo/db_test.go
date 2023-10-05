@@ -4,11 +4,17 @@ import (
 	"context"
 	"github.com/Runway-Club/auth_lib/domain"
 	"github.com/Runway-Club/auth_lib/internal/auth/repo"
+	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"testing"
 )
 
 func TestNewAuthRepository(t *testing.T) {
+	viper.SetConfigFile("../../../configs/dev.yaml")
+	err := viper.MergeInConfig()
+	if err != nil {
+		t.Error(err)
+	}
 	// gorm in memory db
 	sqliteDialector := sqlite.Open(":memory:")
 	dbRepo := repo.NewAuthRepository(sqliteDialector)

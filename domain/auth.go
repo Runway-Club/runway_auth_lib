@@ -22,9 +22,14 @@ type Token struct {
 	RoleId string `json:"role_id"`
 }
 
+type StaticUserList struct {
+	List []*Auth `json:"static_users" yaml:"static_users" mapstructure:"static_users"`
+}
+
 type AuthRepository interface {
 	Create(ctx context.Context, auth *Auth) error
 	GetById(ctx context.Context, id string) (*Auth, error)
+	GetStaticUserMap(ctx context.Context) map[string]*Auth
 	GetByUsername(ctx context.Context, username string) (*Auth, error)
 	GetByUsernameAndHpassword(ctx context.Context, username, hpassword string) (*Auth, error)
 	Update(ctx context.Context, auth *Auth) error

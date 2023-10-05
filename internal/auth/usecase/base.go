@@ -5,6 +5,7 @@ import (
 	"github.com/Runway-Club/auth_lib/domain"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"regexp"
 )
 
@@ -47,13 +48,21 @@ func (a *AuthUseCase) SignInWithProvider(ctx context.Context, provider domain.Pr
 }
 
 func NewAuthUseCase(repo domain.AuthRepository, jwt domain.JwtGenerator) *AuthUseCase {
-	return &AuthUseCase{
+	usecase := &AuthUseCase{
 		repo:           repo,
 		passwordPolicy: viper.GetString("runway_auth.password.policy"),
 		hashCost:       viper.GetString("runway_auth.password.cost"),
 		defaultRoleId:  viper.GetString("runway_auth.default_role_id"),
 		jwt:            jwt,
 	}
+	// init static users, omit error because it's okay if it's already exist
+	for _, user := range repo.GetStaticUserMap(context.Background()) {
+		err := usecase.SignUp(context.Background(), user)
+		if err != nil {
+			log.Print(err)
+		}
+	}
+	return usecase
 }
 
 func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
