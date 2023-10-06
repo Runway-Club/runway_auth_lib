@@ -38,6 +38,7 @@ type AuthRepository interface {
 
 type AuthUseCase interface {
 	SignUp(ctx context.Context, auth *Auth) error
+	SignUpWithProvider(ctx context.Context, provider Provider, token string) error
 	SignIn(ctx context.Context, username, password string) (token *Token, err error)
 	SignInWithProvider(ctx context.Context, provider Provider, token string) (genToken *Token, err error)
 }

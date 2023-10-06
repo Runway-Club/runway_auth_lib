@@ -43,6 +43,13 @@ func SignUp(ctx context.Context, auth *domain.Auth) error {
 	return authUseCase.SignUp(ctx, auth)
 }
 
+func SignUpWithProvider(ctx context.Context, token string) error {
+	if provider == nil {
+		panic("provider not initialized")
+	}
+	return authUseCase.SignUpWithProvider(ctx, provider, token)
+}
+
 func SignInWithProvider(ctx context.Context, token string) (genToken *domain.Token, err error) {
 	if provider == nil {
 		panic("provider not initialized")

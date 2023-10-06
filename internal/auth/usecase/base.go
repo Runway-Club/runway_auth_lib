@@ -17,6 +17,29 @@ type AuthUseCase struct {
 	defaultRoleId  string
 }
 
+func (a *AuthUseCase) SignUpWithProvider(ctx context.Context, provider domain.Provider, token string) error {
+	uid, _, err := provider.VerifyToken(ctx, token)
+	if err != nil {
+		return err
+	}
+	// look for existing username
+	found, err := a.repo.GetById(ctx, uid)
+	if err == nil || found != nil {
+		return domain.ErrUsernameExist
+	}
+	// create new auth
+	auth := &domain.Auth{
+		Id:       uid,
+		Username: uid,
+		RoleId:   a.defaultRoleId,
+	}
+	err = a.repo.Create(ctx, auth)
+	if err != nil {
+		return domain.ErrInternal
+	}
+	return nil
+}
+
 func (a *AuthUseCase) SignInWithProvider(ctx context.Context, provider domain.Provider, token string) (genToken *domain.Token, err error) {
 	uid, claims, err := provider.VerifyToken(ctx, token)
 	if err != nil {
@@ -45,24 +68,6 @@ func (a *AuthUseCase) SignInWithProvider(ctx context.Context, provider domain.Pr
 		UserId: user.Id,
 		RoleId: user.RoleId,
 	}, nil
-}
-
-func NewAuthUseCase(repo domain.AuthRepository, jwt domain.JwtGenerator) *AuthUseCase {
-	usecase := &AuthUseCase{
-		repo:           repo,
-		passwordPolicy: viper.GetString("runway_auth.password.policy"),
-		hashCost:       viper.GetString("runway_auth.password.cost"),
-		defaultRoleId:  viper.GetString("runway_auth.default_role_id"),
-		jwt:            jwt,
-	}
-	// init static users, omit error because it's okay if it's already exist
-	for _, user := range repo.GetStaticUserMap(context.Background()) {
-		err := usecase.SignUp(context.Background(), user)
-		if err != nil {
-			log.Print(err)
-		}
-	}
-	return usecase
 }
 
 func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
@@ -153,4 +158,22 @@ func (a *AuthUseCase) SignIn(ctx context.Context, username, password string) (to
 		UserId: user.Id,
 		RoleId: user.RoleId,
 	}, nil
+}
+
+func NewAuthUseCase(repo domain.AuthRepository, jwt domain.JwtGenerator) *AuthUseCase {
+	usecase := &AuthUseCase{
+		repo:           repo,
+		passwordPolicy: viper.GetString("runway_auth.password.policy"),
+		hashCost:       viper.GetString("runway_auth.password.cost"),
+		defaultRoleId:  viper.GetString("runway_auth.default_role_id"),
+		jwt:            jwt,
+	}
+	// init static users, omit error because it's okay if it's already exist
+	for _, user := range repo.GetStaticUserMap(context.Background()) {
+		err := usecase.SignUp(context.Background(), user)
+		if err != nil {
+			log.Print(err)
+		}
+	}
+	return usecase
 }

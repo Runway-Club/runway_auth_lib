@@ -8,6 +8,7 @@ import (
 	"github.com/Runway-Club/auth_lib/internal/auth/repo"
 	"github.com/Runway-Club/auth_lib/internal/auth/usecase"
 	"github.com/Runway-Club/auth_lib/internal/jwt"
+	"github.com/Runway-Club/auth_lib/internal/providers"
 	"github.com/spf13/viper"
 	"gorm.io/driver/sqlite"
 	"testing"
@@ -21,6 +22,10 @@ func TestAuthUseCase(t *testing.T) {
 	}
 	authRepo := repo.NewAuthRepository(sqlite.Open(":memory:"))
 	authUseCase := usecase.NewAuthUseCase(authRepo, jwt.NewJwtGenerator())
+
+	dummyJwtGenerator := jwt.NewDummyJwtGenerator("test.com", 3600000, "secret")
+	provider := providers.NewDummyProvider(dummyJwtGenerator)
+
 	t.Run("sign up", func(t *testing.T) {
 		err := authUseCase.SignUp(context.Background(), &domain.Auth{
 			Id:       "1",
@@ -71,4 +76,51 @@ func TestAuthUseCase(t *testing.T) {
 		}
 		fmt.Println(token)
 	})
+
+	t.Run("Sign up with provider", func(t *testing.T) {
+		// generate token from dummy provider
+		token, err := dummyJwtGenerator.GenerateToken(&domain.Auth{
+			Id:     "0002",
+			RoleId: "admin",
+		}, map[string]interface{}{})
+		if err != nil {
+			t.Error(err)
+		}
+		err = authUseCase.SignUpWithProvider(context.Background(), provider, token)
+		if err != nil {
+			t.Error(err)
+		}
+		// get new user by username
+		user, err := authRepo.GetByUsername(context.Background(), "0002")
+		if err != nil {
+			t.Error(err)
+		}
+		if user == nil {
+			t.Error("user is empty")
+		}
+		if user.Id != "0002" {
+			t.Error("user id is not 0002")
+		}
+	})
+
+	t.Run("Sign in with provider", func(t *testing.T) {
+		token, err := dummyJwtGenerator.GenerateToken(&domain.Auth{
+			Id:     "0002",
+			RoleId: "admin",
+		}, map[string]interface{}{})
+		if err != nil {
+			t.Error(err)
+		}
+		auth, err := authUseCase.SignInWithProvider(context.Background(), provider, token)
+		if err != nil {
+			t.Error(err)
+		}
+		if auth == nil {
+			t.Error("auth is empty")
+		}
+		if auth.Id != "0002" {
+			t.Error("auth id is not 0002")
+		}
+	})
+
 }
