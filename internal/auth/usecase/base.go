@@ -17,6 +17,27 @@ type AuthUseCase struct {
 	defaultRoleId  string
 }
 
+func (a *AuthUseCase) CheckAuthWithProvider(ctx context.Context, provider domain.Provider, token string) (bool, error) {
+	uid, _, err := provider.VerifyToken(ctx, token)
+	if err != nil {
+		return false, err
+	}
+	return a.CheckAuth(ctx, &domain.Auth{
+		Id: uid,
+	})
+}
+
+func (a *AuthUseCase) CheckAuth(ctx context.Context, auth *domain.Auth) (bool, error) {
+	found, err := a.repo.GetById(ctx, auth.Id)
+	if err != nil {
+		return false, err
+	}
+	if found == nil {
+		return false, nil
+	}
+	return true, nil
+}
+
 func (a *AuthUseCase) SignUpWithProvider(ctx context.Context, provider domain.Provider, token string) error {
 	uid, _, err := provider.VerifyToken(ctx, token)
 	if err != nil {

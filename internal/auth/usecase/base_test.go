@@ -123,4 +123,22 @@ func TestAuthUseCase(t *testing.T) {
 		}
 	})
 
+	t.Run("Check if auth existed", func(t *testing.T) {
+		token, err := dummyJwtGenerator.GenerateToken(&domain.Auth{
+			Id:     "0002",
+			RoleId: "admin",
+		}, map[string]interface{}{})
+		if err != nil {
+			t.Error(err)
+		}
+		existed, err := authUseCase.CheckAuthWithProvider(context.Background(), provider, token)
+		if err != nil {
+			t.Error(err)
+		}
+		if !existed {
+			t.Error("auth is not existed")
+		}
+
+	})
+
 }

@@ -41,6 +41,8 @@ type AuthUseCase interface {
 	SignUpWithProvider(ctx context.Context, provider Provider, token string) error
 	SignIn(ctx context.Context, username, password string) (token *Token, err error)
 	SignInWithProvider(ctx context.Context, provider Provider, token string) (genToken *Token, err error)
+	CheckAuth(ctx context.Context, auth *Auth) (bool, error)
+	CheckAuthWithProvider(ctx context.Context, provider Provider, token string) (bool, error)
 }
 
 var (
