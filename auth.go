@@ -95,3 +95,10 @@ func VerifyTokenAndPerm(ctx context.Context, token, resource, payload string) er
 	}
 	return domain.ErrPermissionDenied
 }
+
+func CheckAuthWithProvider(ctx context.Context, token string) (bool, error) {
+	if provider == nil {
+		panic("provider not initialized")
+	}
+	return authUseCase.CheckAuthWithProvider(ctx, provider, token)
+}
