@@ -2,13 +2,34 @@ package repo
 
 import (
 	"context"
+	"github.com/Runway-Club/auth_lib/common"
 	"github.com/Runway-Club/auth_lib/domain"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"math"
 )
 
 type ACIRepository struct {
 	db *gorm.DB
+}
+
+func (a *ACIRepository) List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*domain.ACI], error) {
+	acl := make([]*domain.ACI, 0)
+	offset := query.Page * query.Size
+	tx := a.db.WithContext(ctx).Offset(offset).Limit(query.Size).Find(acl)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	count := int64(0)
+	// count all row
+	a.db.WithContext(ctx).Count(&count)
+	numOfPage := int(math.Ceil(float64(count) / float64(query.Size)))
+
+	return &common.ListResult[*domain.ACI]{
+		Data:    acl,
+		EndPage: numOfPage,
+	}, nil
+
 }
 
 type defaultACL struct {
@@ -89,17 +110,11 @@ func (a *ACIRepository) GetByUserId(ctx context.Context, userId string) ([]*doma
 func (a *ACIRepository) CheckByRoleId(ctx context.Context, roleId string, resource string, payload string) (bool, error) {
 	found := &domain.ACI{}
 	tx := a.db.WithContext(ctx).Where("role_id = ? AND resource = ? AND payload = ?", roleId, resource, payload).First(found)
-	if tx.Error != nil {
-		return false, tx.Error
-	}
-	return true, nil
+	return tx.RowsAffected == 0, tx.Error
 }
 
 func (a *ACIRepository) CheckByUserId(ctx context.Context, userId string, resource string, payload string) (bool, error) {
 	found := &domain.ACI{}
 	tx := a.db.WithContext(ctx).Where("user_id = ? AND resource = ? AND payload = ?", userId, resource, payload).First(found)
-	if tx.Error != nil {
-		return false, tx.Error
-	}
-	return true, nil
+	return tx.RowsAffected == 0, tx.Error
 }
