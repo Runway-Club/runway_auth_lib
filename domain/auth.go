@@ -45,6 +45,7 @@ type AuthUseCase interface {
 	CheckAuthWithProvider(ctx context.Context, provider Provider, token string) (existed bool, err error)
 	Update(ctx context.Context, auth *Auth) error
 	Delete(ctx context.Context, id string) error
+	Verify(ctx context.Context, token string) (auth *Auth, err error)
 }
 
 var (

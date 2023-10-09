@@ -102,3 +102,7 @@ func CheckAuthWithProvider(ctx context.Context, token string) (bool, error) {
 	}
 	return authUseCase.CheckAuthWithProvider(ctx, provider, token)
 }
+
+func VerifyToken(ctx context.Context, token string) (auth *domain.Auth, err error) {
+	return authUseCase.Verify(ctx, token)
+}

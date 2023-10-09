@@ -19,6 +19,14 @@ type AuthUseCase struct {
 	defaultRoleId  string
 }
 
+func (a *AuthUseCase) Verify(ctx context.Context, token string) (auth *domain.Auth, err error) {
+	auth, _, err = a.jwt.VerifyToken(token)
+	if err != nil {
+		return nil, err
+	}
+	return auth, nil
+}
+
 func (a *AuthUseCase) Update(ctx context.Context, auth *domain.Auth) error {
 	return a.repo.Update(ctx, auth)
 }
