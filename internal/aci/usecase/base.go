@@ -12,6 +12,10 @@ type ACIUseCase struct {
 	aciRepo domain.ACIRepository
 }
 
+func (a *ACIUseCase) GetResourcesByUserIdAndPayload(ctx context.Context, userId string, payload string) ([]*domain.ACI, error) {
+	return a.aciRepo.GetResourcesByUserIdAndPayload(ctx, userId, payload)
+}
+
 func (a *ACIUseCase) Update(ctx context.Context, aci *domain.ACI) error {
 	return a.aciRepo.Update(ctx, aci)
 }

@@ -13,6 +13,15 @@ type ACIRepository struct {
 	db *gorm.DB
 }
 
+func (a *ACIRepository) GetResourcesByUserIdAndPayload(ctx context.Context, userId string, payload string) ([]*domain.ACI, error) {
+	var found []*domain.ACI
+	tx := a.db.WithContext(ctx).Where("user_id = ? AND payload = ?", userId, payload).Find(&found)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	return found, nil
+}
+
 func (a *ACIRepository) Update(ctx context.Context, aci *domain.ACI) error {
 	tx := a.db.WithContext(ctx).Save(aci)
 	return tx.Error
