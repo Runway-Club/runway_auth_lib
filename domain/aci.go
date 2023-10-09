@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+	"github.com/Runway-Club/auth_lib/common"
 	"gorm.io/gorm"
 )
 
@@ -24,6 +25,7 @@ type ACIRepository interface {
 	GetByUserId(ctx context.Context, userId string) ([]*ACI, error)
 	CheckByRoleId(ctx context.Context, roleId string, resource string, payload string) (bool, error)
 	CheckByUserId(ctx context.Context, userId string, resource string, payload string) (bool, error)
+	List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*ACI], error)
 }
 
 type ACIUseCase interface {
@@ -33,6 +35,7 @@ type ACIUseCase interface {
 	GetByRoleId(ctx context.Context, roleId string) ([]*ACI, error)
 	GetByPayload(ctx context.Context, payload string) ([]*ACI, error)
 	GetByUserId(ctx context.Context, userId string) ([]*ACI, error)
+	List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*ACI], error)
 }
 
 var (

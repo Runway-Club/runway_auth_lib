@@ -2,11 +2,16 @@ package usecase
 
 import (
 	"context"
+	"github.com/Runway-Club/auth_lib/common"
 	"github.com/Runway-Club/auth_lib/domain"
 )
 
 type ACIUseCase struct {
 	aciRepo domain.ACIRepository
+}
+
+func (a *ACIUseCase) List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*domain.ACI], error) {
+	return a.aciRepo.List(ctx, query)
 }
 
 func (a *ACIUseCase) Create(ctx context.Context, aci *domain.ACI) error {

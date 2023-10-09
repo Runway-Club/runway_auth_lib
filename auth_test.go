@@ -17,7 +17,7 @@ func TestAuth(t *testing.T) {
 	}, true)
 	t.Run("sign up", func(t *testing.T) {
 		err := auth.SignUp(context.Background(), &domain.Auth{
-			Id:       "1",
+			Id:       "test",
 			Username: "user01",
 			Password: "Strong123456",
 		})
@@ -33,10 +33,10 @@ func TestAuth(t *testing.T) {
 		if token == nil {
 			t.Error("token is nil")
 		}
-		if token.Id != "1" {
+		if token.Id != "test" {
 			t.Errorf("expected id 1, got %s", token.Id)
 		}
-		if token.UserId != "1" {
+		if token.UserId != "test" {
 			t.Errorf("expected user id 1, got %s", token.UserId)
 		}
 		if token.RoleId != "default" {
@@ -81,9 +81,9 @@ func TestAuth(t *testing.T) {
 			t.Error("expected true, got false")
 		}
 
-		result = auth.VerifyTokenAndPerm(context.Background(), token.Jwt, "v1/course.POST", "")
-		if result == nil {
-			t.Error("expected false, got true")
+		result = auth.VerifyTokenAndPerm(context.Background(), token.Jwt, "v1/course.POST", "demo")
+		if result != nil {
+			t.Error("expected true, got false")
 		}
 
 		result = auth.VerifyTokenAndPerm(context.Background(), token.Jwt, "v1/course.PUT", "")
