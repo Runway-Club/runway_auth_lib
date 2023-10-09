@@ -26,6 +26,8 @@ type ACIRepository interface {
 	CheckByRoleId(ctx context.Context, roleId string, resource string, payload string) (bool, error)
 	CheckByUserId(ctx context.Context, userId string, resource string, payload string) (bool, error)
 	List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*ACI], error)
+	Update(ctx context.Context, aci *ACI) error
+	Delete(ctx context.Context, id string) error
 }
 
 type ACIUseCase interface {
@@ -36,6 +38,8 @@ type ACIUseCase interface {
 	GetByPayload(ctx context.Context, payload string) ([]*ACI, error)
 	GetByUserId(ctx context.Context, userId string) ([]*ACI, error)
 	List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*ACI], error)
+	Update(ctx context.Context, aci *ACI) error
+	Delete(ctx context.Context, id string) error
 }
 
 var (

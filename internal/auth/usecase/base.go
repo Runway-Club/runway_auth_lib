@@ -2,11 +2,13 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"github.com/Runway-Club/auth_lib/domain"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"regexp"
+	"time"
 )
 
 type AuthUseCase struct {
@@ -15,6 +17,14 @@ type AuthUseCase struct {
 	hashCost       string
 	jwt            domain.JwtGenerator
 	defaultRoleId  string
+}
+
+func (a *AuthUseCase) Update(ctx context.Context, auth *domain.Auth) error {
+	return a.repo.Update(ctx, auth)
+}
+
+func (a *AuthUseCase) Delete(ctx context.Context, id string) error {
+	return a.repo.Delete(ctx, id)
 }
 
 func (a *AuthUseCase) CheckAuth(ctx context.Context, uid string) (existed bool, err error) {
@@ -97,6 +107,11 @@ func (a *AuthUseCase) SignInWithProvider(ctx context.Context, provider domain.Pr
 }
 
 func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
+
+	if auth.Id == "" {
+		auth.Id = fmt.Sprintf("%d", time.Now().UnixMilli())
+	}
+
 	if a.passwordPolicy == "" {
 		a.passwordPolicy = "level1"
 	}

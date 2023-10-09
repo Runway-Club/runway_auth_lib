@@ -13,6 +13,16 @@ type ACIRepository struct {
 	db *gorm.DB
 }
 
+func (a *ACIRepository) Update(ctx context.Context, aci *domain.ACI) error {
+	tx := a.db.WithContext(ctx).Save(aci)
+	return tx.Error
+}
+
+func (a *ACIRepository) Delete(ctx context.Context, id string) error {
+	tx := *a.db.WithContext(ctx).Where("id = ?", id).Delete(&domain.ACI{})
+	return tx.Error
+}
+
 func (a *ACIRepository) List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*domain.ACI], error) {
 	acl := make([]*domain.ACI, 0)
 	offset := query.Page * query.Size
@@ -29,7 +39,6 @@ func (a *ACIRepository) List(ctx context.Context, query *common.QueryOpts) (*com
 		Data:    acl,
 		EndPage: numOfPage,
 	}, nil
-
 }
 
 type defaultACL struct {
