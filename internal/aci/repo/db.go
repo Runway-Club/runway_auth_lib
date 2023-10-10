@@ -34,7 +34,7 @@ func (a *ACIRepository) Delete(ctx context.Context, id string) error {
 
 func (a *ACIRepository) List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*domain.ACI], error) {
 	acl := make([]*domain.ACI, 0)
-	offset := query.Page * query.Size
+	offset := (query.Page - 1) * query.Size
 	tx := a.db.WithContext(ctx).Offset(offset).Limit(query.Size).Find(&acl)
 	if tx.Error != nil {
 		return nil, tx.Error
