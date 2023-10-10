@@ -75,6 +75,9 @@ func GetACIUseCase() domain.ACIUseCase {
 
 func VerifyTokenAndPerm(ctx context.Context, token, resource, payload string) error {
 	auth, _, err := jwtGenerator.VerifyToken(token)
+	if err != nil {
+		return err
+	}
 	// bypass if auth is static
 	if len(authRepo.GetStaticUserMap(ctx)) > 0 {
 		if _, ok := authRepo.GetStaticUserMap(ctx)[auth.Id]; ok {
