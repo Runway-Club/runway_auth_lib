@@ -25,6 +25,7 @@ runway_auth:
     - id: "0"
       description: "Everyone can get courses"
       resource: "v1/course.GET"
+      role_id: "default"
     - id: "1"
       description: "Only admin can edit course"
       resource: "v1/course.PUT"

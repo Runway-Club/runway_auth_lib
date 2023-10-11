@@ -85,9 +85,6 @@ func VerifyTokenAndPerm(ctx context.Context, token, resource, payload string) er
 		}
 	}
 
-	if err != nil {
-		return err
-	}
 	result, err := aciRepo.CheckByUserId(ctx, auth.Id, resource, payload)
 	if result {
 		return nil
