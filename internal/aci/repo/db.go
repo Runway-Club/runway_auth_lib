@@ -128,11 +128,11 @@ func (a *ACIRepository) GetByUserId(ctx context.Context, userId string) ([]*doma
 func (a *ACIRepository) CheckByRoleId(ctx context.Context, roleId string, resource string, payload string) (bool, error) {
 	found := &domain.ACI{}
 	tx := a.db.WithContext(ctx).Where("role_id = ? AND resource = ? AND payload = ?", roleId, resource, payload).First(&found)
-	return tx.RowsAffected == 0, tx.Error
+	return tx.RowsAffected != 0, tx.Error
 }
 
 func (a *ACIRepository) CheckByUserId(ctx context.Context, userId string, resource string, payload string) (bool, error) {
 	found := &domain.ACI{}
 	tx := a.db.WithContext(ctx).Where("user_id = ? AND resource = ? AND payload = ?", userId, resource, payload).First(&found)
-	return tx.RowsAffected == 0, tx.Error
+	return tx.RowsAffected != 0, tx.Error
 }
