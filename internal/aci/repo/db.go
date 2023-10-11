@@ -41,7 +41,7 @@ func (a *ACIRepository) List(ctx context.Context, query *common.QueryOpts) (*com
 	}
 	count := int64(0)
 	// count all row
-	a.db.WithContext(ctx).Find(&acl).Count(&count)
+	a.db.WithContext(ctx).Find(&domain.ACI{}).Count(&count)
 	numOfPage := int(math.Ceil(float64(count) / float64(query.Size)))
 
 	return &common.ListResult[*domain.ACI]{

@@ -20,6 +20,12 @@ func (a *ACIUseCase) Update(ctx context.Context, aci *domain.ACI) error {
 	if aci.Id == "" {
 		return domain.ErrInvalidACI
 	}
+	// check if aci exist
+	foundACI, err := a.aciRepo.GetById(ctx, aci.Id)
+	if err != nil || foundACI == nil {
+		return domain.ErrACINotFound
+	}
+
 	return a.aciRepo.Update(ctx, aci)
 }
 
