@@ -17,6 +17,9 @@ func (a *ACIUseCase) GetResourcesByUserIdAndPayload(ctx context.Context, userId 
 }
 
 func (a *ACIUseCase) Update(ctx context.Context, aci *domain.ACI) error {
+	if aci.Id == "" {
+		return domain.ErrInvalidACI
+	}
 	return a.aciRepo.Update(ctx, aci)
 }
 
