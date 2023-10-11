@@ -104,6 +104,9 @@ func (a *ACIRepository) GetByRoleId(ctx context.Context, roleId string) ([]*doma
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
+	if len(found) == 0 {
+		return nil, domain.ErrACINotFound
+	}
 	return found, nil
 }
 
@@ -113,6 +116,9 @@ func (a *ACIRepository) GetByPayload(ctx context.Context, payload string) ([]*do
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
+	if len(found) == 0 {
+		return nil, domain.ErrACINotFound
+	}
 	return found, nil
 }
 
@@ -121,6 +127,9 @@ func (a *ACIRepository) GetByUserId(ctx context.Context, userId string) ([]*doma
 	tx := a.db.WithContext(ctx).Where("user_id = ?", userId).Find(&found)
 	if tx.Error != nil {
 		return nil, tx.Error
+	}
+	if len(found) == 0 {
+		return nil, domain.ErrACINotFound
 	}
 	return found, nil
 }

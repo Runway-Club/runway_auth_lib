@@ -29,6 +29,9 @@ func (a *ACIUseCase) List(ctx context.Context, query *common.QueryOpts) (*common
 }
 
 func (a *ACIUseCase) Create(ctx context.Context, aci *domain.ACI) error {
+	if aci.Resource == "" {
+		return domain.ErrInvalidACI
+	}
 	// create random id if aci.id is empty
 	if aci.Id == "" {
 		aci.Id = fmt.Sprintf("%d", time.Now().UnixMilli())

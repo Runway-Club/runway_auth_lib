@@ -47,4 +47,5 @@ type ACIUseCase interface {
 var (
 	ErrACINotFound      = errors.New("aci not found")
 	ErrPermissionDenied = errors.New("permission denied")
+	ErrInvalidACI       = errors.New("invalid aci")
 )
