@@ -24,12 +24,24 @@ func (a *ACIRepository) GetResourcesByUserIdAndPayload(ctx context.Context, user
 
 func (a *ACIRepository) Update(ctx context.Context, aci *domain.ACI) error {
 	tx := a.db.WithContext(ctx).Save(aci)
-	return tx.Error
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return domain.ErrACINotFound
+	}
+	return nil
 }
 
 func (a *ACIRepository) Delete(ctx context.Context, id string) error {
 	tx := *a.db.WithContext(ctx).Where("id = ?", id).Delete(&domain.ACI{})
-	return tx.Error
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if tx.RowsAffected == 0 {
+		return domain.ErrACINotFound
+	}
+	return nil
 }
 
 func (a *ACIRepository) List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*domain.ACI], error) {
