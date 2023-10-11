@@ -14,10 +14,10 @@ type ACIRepository struct {
 }
 
 func (a *ACIRepository) GetResourcesByUserIdAndPayload(ctx context.Context, userId string, payload string) ([]*domain.ACI, error) {
-	var found []*domain.ACI
+	found := make([]*domain.ACI, 0)
 	tx := a.db.WithContext(ctx).Where("user_id = ? AND payload = ?", userId, payload).Find(&found)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return found, tx.Error
 	}
 	return found, nil
 }
@@ -90,46 +90,46 @@ func (a *ACIRepository) GetById(ctx context.Context, id string) (*domain.ACI, er
 }
 
 func (a *ACIRepository) GetByResource(ctx context.Context, resource string) ([]*domain.ACI, error) {
-	var found []*domain.ACI
+	found := make([]*domain.ACI, 0)
 	tx := a.db.WithContext(ctx).Where("resource = ?", resource).Find(&found)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return found, tx.Error
 	}
 	return found, nil
 }
 
 func (a *ACIRepository) GetByRoleId(ctx context.Context, roleId string) ([]*domain.ACI, error) {
-	var found []*domain.ACI
+	found := make([]*domain.ACI, 0)
 	tx := a.db.WithContext(ctx).Where("role_id = ?", roleId).Find(&found)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return found, tx.Error
 	}
 	if len(found) == 0 {
-		return nil, domain.ErrACINotFound
+		return found, domain.ErrACINotFound
 	}
 	return found, nil
 }
 
 func (a *ACIRepository) GetByPayload(ctx context.Context, payload string) ([]*domain.ACI, error) {
-	var found []*domain.ACI
+	found := make([]*domain.ACI, 0)
 	tx := a.db.WithContext(ctx).Where("payload = ?", payload).Find(&found)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return found, tx.Error
 	}
 	if len(found) == 0 {
-		return nil, domain.ErrACINotFound
+		return found, domain.ErrACINotFound
 	}
 	return found, nil
 }
 
 func (a *ACIRepository) GetByUserId(ctx context.Context, userId string) ([]*domain.ACI, error) {
-	var found []*domain.ACI
+	found := make([]*domain.ACI, 0)
 	tx := a.db.WithContext(ctx).Where("user_id = ?", userId).Find(&found)
 	if tx.Error != nil {
-		return nil, tx.Error
+		return found, tx.Error
 	}
 	if len(found) == 0 {
-		return nil, domain.ErrACINotFound
+		return found, domain.ErrACINotFound
 	}
 	return found, nil
 }
