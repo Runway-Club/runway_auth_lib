@@ -17,6 +17,14 @@ type AuthUseCase struct {
 	defaultRoleId  string
 }
 
+func (a *AuthUseCase) Update(ctx context.Context, auth *domain.Auth) error {
+	return a.repo.Update(ctx, auth)
+}
+
+func (a *AuthUseCase) Delete(ctx context.Context, id string) error {
+	return a.repo.Delete(ctx, id)
+}
+
 func (a *AuthUseCase) CheckAuthWithProvider(ctx context.Context, provider domain.Provider, token string) (bool, error) {
 	uid, _, err := provider.VerifyToken(ctx, token)
 	if err != nil {
