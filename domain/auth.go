@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"errors"
+	"github.com/Runway-Club/auth_lib/common"
 	"gorm.io/gorm"
 )
 
@@ -34,6 +35,7 @@ type AuthRepository interface {
 	GetByUsernameAndHpassword(ctx context.Context, username, hpassword string) (*Auth, error)
 	Update(ctx context.Context, auth *Auth) error
 	Delete(ctx context.Context, id string) error
+	List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*Auth], error)
 }
 
 type AuthUseCase interface {
@@ -46,6 +48,7 @@ type AuthUseCase interface {
 	Update(ctx context.Context, auth *Auth) error
 	Delete(ctx context.Context, id string) error
 	Verify(ctx context.Context, token string) (auth *Auth, err error)
+	List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*Auth], error)
 }
 
 var (

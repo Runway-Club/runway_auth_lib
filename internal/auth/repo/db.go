@@ -2,15 +2,40 @@ package repo
 
 import (
 	"context"
+	"github.com/Runway-Club/auth_lib/common"
 	"github.com/Runway-Club/auth_lib/domain"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"math"
 )
 
 type AuthRepository struct {
 	db          *gorm.DB
 	StaticUsers *domain.StaticUserList
 	UserIdMap   map[string]*domain.Auth
+}
+
+func (a *AuthRepository) List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*domain.Auth], error) {
+	var auths []*domain.Auth
+	tx := a.db.WithContext(ctx)
+	offset := opt.Size * opt.Page
+	if opt != nil {
+		tx = tx.Limit(opt.Size).Offset(offset)
+	}
+	tx = tx.Find(&auths)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	count := int64(0)
+	tx = a.db.WithContext(ctx).Model(&domain.Auth{}).Count(&count)
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+	endPage := int(math.Floor(float64(count) / float64(opt.Size)))
+	return &common.ListResult[*domain.Auth]{
+		Data:    auths,
+		EndPage: endPage,
+	}, nil
 }
 
 func NewAuthRepository(dialector gorm.Dialector) *AuthRepository {

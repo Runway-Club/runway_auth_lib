@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"github.com/Runway-Club/auth_lib/common"
 	"github.com/Runway-Club/auth_lib/domain"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
@@ -17,6 +18,10 @@ type AuthUseCase struct {
 	hashCost       string
 	jwt            domain.JwtGenerator
 	defaultRoleId  string
+}
+
+func (a *AuthUseCase) List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*domain.Auth], error) {
+	return a.repo.List(ctx, opt)
 }
 
 func (a *AuthUseCase) Verify(ctx context.Context, token string) (auth *domain.Auth, err error) {
