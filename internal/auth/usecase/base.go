@@ -20,6 +20,14 @@ type AuthUseCase struct {
 	defaultRoleId  string
 }
 
+func (a *AuthUseCase) GetByUsername(ctx context.Context, username string) (*domain.Auth, error) {
+	return a.repo.GetByUsername(ctx, username)
+}
+
+func (a *AuthUseCase) GetById(ctx context.Context, id string) (*domain.Auth, error) {
+	return a.repo.GetById(ctx, id)
+}
+
 func (a *AuthUseCase) List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*domain.Auth], error) {
 	return a.repo.List(ctx, opt)
 }
