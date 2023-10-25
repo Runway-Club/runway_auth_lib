@@ -166,6 +166,11 @@ func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
 	}
 	auth.Hpassword = string(hashedPassword)
 
+	// set default role id
+	if auth.RoleId == "" {
+		auth.RoleId = a.defaultRoleId
+	}
+
 	// create new auth
 	err = a.repo.Create(ctx, auth)
 	if err != nil {
