@@ -45,7 +45,8 @@ type AuthUseCase interface {
 	SignInWithProvider(ctx context.Context, provider Provider, token string) (genToken *Token, err error)
 	CheckAuth(ctx context.Context, uid string) (existed bool, err error)
 	CheckAuthWithProvider(ctx context.Context, provider Provider, token string) (existed bool, err error)
-	Update(ctx context.Context, auth *Auth) error
+	ChangePassword(ctx context.Context, uid, oldPassword, newPassword string) error
+	ChangeRole(ctx context.Context, uid, roleId string) error
 	Delete(ctx context.Context, id string) error
 	Verify(ctx context.Context, token string) (auth *Auth, err error)
 	List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*Auth], error)
@@ -54,9 +55,10 @@ type AuthUseCase interface {
 }
 
 var (
-	ErrAuthNotFound     = errors.New("auth not found")
-	ErrUsernameExist    = errors.New("username already exist")
-	ErrInvalidPassword  = errors.New("invalid password")
-	ErrPasswordNotMatch = errors.New("password not match")
-	ErrInternal         = errors.New("internal error")
+	ErrAuthNotFound          = errors.New("auth not found")
+	ErrUsernameExist         = errors.New("username already exist")
+	ErrInvalidPassword       = errors.New("invalid password")
+	ErrPasswordNotMatch      = errors.New("password not match")
+	ErrInternal              = errors.New("internal error")
+	ErrInvalidPasswordPolicy = errors.New("invalid password policy")
 )

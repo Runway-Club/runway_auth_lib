@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"log"
-	"regexp"
 	"time"
 )
 
@@ -18,6 +17,50 @@ type AuthUseCase struct {
 	hashCost       string
 	jwt            domain.JwtGenerator
 	defaultRoleId  string
+}
+
+func (a *AuthUseCase) ChangePassword(ctx context.Context, uid, oldPassword, newPassword string) error {
+	// get by username
+	user, err := a.repo.GetById(ctx, uid)
+	if err != nil {
+		return domain.ErrAuthNotFound
+	}
+
+	// check password
+	errPasswordPolicy := common.CheckPasswordPolicy(newPassword, a.passwordPolicy)
+	if errPasswordPolicy != nil {
+		return errPasswordPolicy
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(user.Hpassword), []byte(oldPassword))
+	if err != nil {
+		return domain.ErrPasswordNotMatch
+	}
+	// hash password
+	hashedPassword, err := common.GeneratePassword(newPassword, a.hashCost)
+	if err != nil {
+		return err
+	}
+	user.Hpassword = hashedPassword
+	err = a.repo.Update(ctx, user)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *AuthUseCase) ChangeRole(ctx context.Context, uid, roleId string) error {
+	// get by username
+	user, err := a.repo.GetById(ctx, uid)
+	if err != nil {
+		return domain.ErrAuthNotFound
+	}
+	user.RoleId = roleId
+	err = a.repo.Update(ctx, user)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (a *AuthUseCase) GetByUsername(ctx context.Context, username string) (*domain.Auth, error) {
@@ -133,51 +176,20 @@ func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
 		auth.Id = fmt.Sprintf("%d", time.Now().UnixMilli())
 	}
 
-	if a.passwordPolicy == "" {
-		a.passwordPolicy = "level1"
-	}
-	// check password policy
-	if a.passwordPolicy == "level1" {
-		// minimum 8 characters
-		if len(auth.Password) < 8 {
-			return domain.ErrInvalidPassword
-		}
-	}
-	if a.passwordPolicy == "level2" {
-		//  minimum 8 any characters and contain at least one number
-		regex := regexp.MustCompile(`[0-9]`)
-		if len(auth.Password) < 8 || !regex.MatchString(auth.Password) {
-			return domain.ErrInvalidPassword
-		}
-	}
-	if a.passwordPolicy == "level3" {
-		// minimum 8 any characters and contain at least one number and one uppercase letter and one special character
-		regex := regexp.MustCompile(`[0-9]`)
-		regex2 := regexp.MustCompile(`[A-Z]`)
-		regex3 := regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`)
-
-		if len(auth.Password) < 8 || !regex.MatchString(auth.Password) || !regex2.MatchString(auth.Password) || !regex3.MatchString(auth.Password) {
-			return domain.ErrInvalidPassword
-		}
+	passwordPolicyErr := common.CheckPasswordPolicy(auth.Password, a.passwordPolicy)
+	if passwordPolicyErr != nil {
+		return passwordPolicyErr
 	}
 	// look for existing username
 	found, err := a.repo.GetByUsername(ctx, auth.Username)
 	if err == nil || found != nil {
 		return domain.ErrUsernameExist
 	}
-	// hash password
-	hashCost := bcrypt.DefaultCost
-	if a.hashCost == "min" {
-		hashCost = bcrypt.MinCost
-	}
-	if a.hashCost == "max" {
-		hashCost = bcrypt.MaxCost
-	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(auth.Password), hashCost)
+	hashedPassword, err := common.GeneratePassword(auth.Password, a.hashCost)
 	if err != nil {
-		return domain.ErrInternal
+		return err
 	}
-	auth.Hpassword = string(hashedPassword)
+	auth.Hpassword = hashedPassword
 
 	auth.RoleId = a.defaultRoleId
 
