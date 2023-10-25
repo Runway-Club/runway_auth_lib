@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Runway-Club/auth_lib/common"
 	"github.com/Runway-Club/auth_lib/domain"
+	"github.com/Runway-Club/auth_lib/utils"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"log"
@@ -27,7 +28,7 @@ func (a *AuthUseCase) ChangePassword(ctx context.Context, uid, oldPassword, newP
 	}
 
 	// check password
-	errPasswordPolicy := common.CheckPasswordPolicy(newPassword, a.passwordPolicy)
+	errPasswordPolicy := utils.CheckPasswordPolicy(newPassword, a.passwordPolicy)
 	if errPasswordPolicy != nil {
 		return errPasswordPolicy
 	}
@@ -37,7 +38,7 @@ func (a *AuthUseCase) ChangePassword(ctx context.Context, uid, oldPassword, newP
 		return domain.ErrPasswordNotMatch
 	}
 	// hash password
-	hashedPassword, err := common.GeneratePassword(newPassword, a.hashCost)
+	hashedPassword, err := utils.GeneratePassword(newPassword, a.hashCost)
 	if err != nil {
 		return err
 	}
@@ -176,7 +177,7 @@ func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
 		auth.Id = fmt.Sprintf("%d", time.Now().UnixMilli())
 	}
 
-	passwordPolicyErr := common.CheckPasswordPolicy(auth.Password, a.passwordPolicy)
+	passwordPolicyErr := utils.CheckPasswordPolicy(auth.Password, a.passwordPolicy)
 	if passwordPolicyErr != nil {
 		return passwordPolicyErr
 	}
@@ -185,7 +186,7 @@ func (a *AuthUseCase) SignUp(ctx context.Context, auth *domain.Auth) error {
 	if err == nil || found != nil {
 		return domain.ErrUsernameExist
 	}
-	hashedPassword, err := common.GeneratePassword(auth.Password, a.hashCost)
+	hashedPassword, err := utils.GeneratePassword(auth.Password, a.hashCost)
 	if err != nil {
 		return err
 	}
