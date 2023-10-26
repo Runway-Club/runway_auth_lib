@@ -117,5 +117,8 @@ func (a *AuthRepository) Delete(ctx context.Context, id string) error {
 	if tx.Error != nil {
 		return tx.Error
 	}
+	if tx.RowsAffected == 0 {
+		return domain.ErrAuthNotFound
+	}
 	return nil
 }

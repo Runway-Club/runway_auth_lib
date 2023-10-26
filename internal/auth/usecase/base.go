@@ -89,6 +89,10 @@ func (a *AuthUseCase) Update(ctx context.Context, auth *domain.Auth) error {
 }
 
 func (a *AuthUseCase) Delete(ctx context.Context, id string) error {
+	// prevent delete static user
+	if _, ok := a.repo.GetStaticUserMap(ctx)[id]; ok {
+		return domain.ErrPermissionDenied
+	}
 	return a.repo.Delete(ctx, id)
 }
 
