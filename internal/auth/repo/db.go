@@ -31,7 +31,7 @@ func (a *AuthRepository) List(ctx context.Context, opt *common.QueryOpts) (*comm
 	if tx.Error != nil {
 		return nil, tx.Error
 	}
-	endPage := int(math.Floor(float64(count) / float64(opt.Size)))
+	endPage := int(math.Ceil(float64(count) / float64(opt.Size)))
 	return &common.ListResult[*domain.Auth]{
 		Data:    auths,
 		EndPage: endPage,
