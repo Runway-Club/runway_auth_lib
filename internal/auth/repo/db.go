@@ -18,7 +18,7 @@ type AuthRepository struct {
 func (a *AuthRepository) List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*domain.Auth], error) {
 	var auths []*domain.Auth
 	tx := a.db.WithContext(ctx)
-	offset := opt.Size * opt.Page
+	offset := opt.Size * (opt.Page - 1)
 	if opt != nil {
 		tx = tx.Limit(opt.Size).Offset(offset)
 	}
