@@ -50,6 +50,10 @@ func (j JwtGenerator) GenerateToken(auth *domain.Auth, payload map[string]interf
 }
 
 func (j JwtGenerator) VerifyToken(token string) (*domain.Auth, map[string]interface{}, error) {
+	// Bearer process
+	if len(token) > 7 && token[0:7] == "Bearer " {
+		token = token[7:]
+	}
 	parsedToken, err := jwtlib.Parse(token, func(token *jwtlib.Token) (interface{}, error) {
 		return j.secret, nil
 	})
