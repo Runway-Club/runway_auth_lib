@@ -77,6 +77,10 @@ func (a *AuthUseCase) List(ctx context.Context, opt *common.QueryOpts) (*common.
 }
 
 func (a *AuthUseCase) Verify(ctx context.Context, token string) (auth *domain.Auth, err error) {
+	// Bearer process
+	if len(token) > 7 && token[:7] == "Bearer " {
+		token = token[7:]
+	}
 	auth, _, err = a.jwt.VerifyToken(token)
 	if err != nil {
 		return nil, err
@@ -123,6 +127,10 @@ func (a *AuthUseCase) CheckAuthWithProvider(ctx context.Context, provider domain
 }
 
 func (a *AuthUseCase) SignUpWithProvider(ctx context.Context, provider domain.Provider, token string) error {
+	// bearer process
+	if len(token) > 7 && token[:7] == "Bearer " {
+		token = token[7:]
+	}
 	uid, _, err := provider.VerifyToken(ctx, token)
 	if err != nil {
 		return err
@@ -146,6 +154,10 @@ func (a *AuthUseCase) SignUpWithProvider(ctx context.Context, provider domain.Pr
 }
 
 func (a *AuthUseCase) SignInWithProvider(ctx context.Context, provider domain.Provider, token string) (genToken *domain.Token, err error) {
+	// bearer process
+	if len(token) > 7 && token[:7] == "Bearer " {
+		token = token[7:]
+	}
 	uid, claims, err := provider.VerifyToken(ctx, token)
 	if err != nil {
 		return nil, err

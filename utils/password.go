@@ -49,7 +49,7 @@ func CheckPasswordPolicy(password string, policy string) error {
 
 func GeneratePassword(password string, hashCost string) (string, error) {
 	// hash password
-	hCost := 0
+	hCost := bcrypt.DefaultCost
 	if hashCost == "min" {
 		hCost = bcrypt.MinCost
 	}
