@@ -52,6 +52,7 @@ type AuthUseCase interface {
 	List(ctx context.Context, opt *common.QueryOpts) (*common.ListResult[*Auth], error)
 	GetByUsername(ctx context.Context, username string) (*Auth, error)
 	GetById(ctx context.Context, id string) (*Auth, error)
+	GetStaticUserList(ctx context.Context) *StaticUserList
 }
 
 var (

@@ -141,4 +141,11 @@ func TestAuthUseCase(t *testing.T) {
 
 	})
 
+	t.Run("Get static user list", func(t *testing.T) {
+		staticUsers := authRepo.GetStaticUserMap(context.Background())
+		if len(staticUsers) == 0 {
+			t.Error("static user list is empty")
+		}
+	})
+
 }
