@@ -15,7 +15,7 @@ type ACIRepository struct {
 
 func (a *ACIRepository) GetResourcesByUserIdAndPayload(ctx context.Context, userId string, payload string) ([]*domain.ACI, error) {
 	found := make([]*domain.ACI, 0)
-	tx := a.db.WithContext(ctx).Where("user_id = ? AND payload = ?", userId, payload).Find(&found)
+	tx := a.db.WithContext(ctx).Where("user_id = ? AND resource = ?", userId, payload).Find(&found)
 	if tx.Error != nil {
 		return found, tx.Error
 	}
