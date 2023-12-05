@@ -106,3 +106,7 @@ func CheckAuthWithProvider(ctx context.Context, token string) (bool, error) {
 func VerifyToken(ctx context.Context, token string) (auth *domain.Auth, err error) {
 	return authUseCase.Verify(ctx, token)
 }
+
+func GetAuthRepo() domain.AuthRepository {
+	return authRepo
+}
