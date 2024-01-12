@@ -34,7 +34,7 @@ func (a *ACIRepository) Update(ctx context.Context, aci *domain.ACI) error {
 }
 
 func (a *ACIRepository) Delete(ctx context.Context, id string) error {
-	tx := *a.db.WithContext(ctx).Where("id = ?", id).Delete(&domain.ACI{})
+	tx := a.db.WithContext(ctx).Where("id = ?", id).Delete(&domain.ACI{})
 	if tx.Error != nil {
 		return tx.Error
 	}
