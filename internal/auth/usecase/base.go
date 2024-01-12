@@ -20,6 +20,16 @@ type AuthUseCase struct {
 	defaultRoleId  string
 }
 
+func (a *AuthUseCase) GetStaticUserList(ctx context.Context) (list *domain.StaticUserList, err error) {
+	authList := make([]*domain.Auth, 0)
+	for _, user := range a.repo.GetStaticUserMap(ctx) {
+		authList = append(authList, user)
+	}
+	return &domain.StaticUserList{
+		List: authList,
+	}, nil
+}
+
 func (a *AuthUseCase) ChangePassword(ctx context.Context, uid, oldPassword, newPassword string) error {
 	// get by username
 	user, err := a.repo.GetById(ctx, uid)
