@@ -29,6 +29,7 @@ type ACIRepository interface {
 	Update(ctx context.Context, aci *ACI) error
 	Delete(ctx context.Context, id string) error
 	GetResourcesByUserIdAndPayload(ctx context.Context, userId string, payload string) ([]*ACI, error)
+	GetResourcesByUserIdAndResource(ctx context.Context, userId string, resource string) ([]*ACI, error)
 }
 
 type ACIUseCase interface {
@@ -39,6 +40,7 @@ type ACIUseCase interface {
 	GetByPayload(ctx context.Context, payload string) ([]*ACI, error)
 	GetByUserId(ctx context.Context, userId string) ([]*ACI, error)
 	GetResourcesByUserIdAndPayload(ctx context.Context, userId string, payload string) ([]*ACI, error)
+	GetResourcesByUserIdAndResource(ctx context.Context, userId string, resource string) ([]*ACI, error)
 	List(ctx context.Context, query *common.QueryOpts) (*common.ListResult[*ACI], error)
 	Update(ctx context.Context, aci *ACI) error
 	Delete(ctx context.Context, id string) error
