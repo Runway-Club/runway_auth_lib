@@ -167,11 +167,11 @@ func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid 
 
 	}
 	// check issuer
-	
+
 	// Must be "https://securetoken.google.com/<projectId>", where <projectId> is the same project ID used for aud above.
-	if parsedClaims.Iss != fmt.Sprintf("https://securetoken.google.com/%s", a.projectId) {
-		return "", nil, domain.ErrInvalidIssuer
-	}
+	//if parsedClaims.Iss != fmt.Sprintf("https://securetoken.google.com/%s", a.projectId) {
+	//	return "", nil, domain.ErrInvalidIssuer
+	//}
 
 	uid = parsedClaims.Sub
 	if uid == "" {

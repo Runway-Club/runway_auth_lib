@@ -1,6 +1,6 @@
 runway_auth:
   default_role_id: "default"
-  projectid: "runwayclub"
+
   jwt:
     secret: "slhfdl48972bkjcxsdsd331@klhjdks9"
     # set expiration time for token in seconds
@@ -40,3 +40,5 @@ runway_auth:
       resource: "v1/course.PUT"
       payload: "demo"
       userId: "test"
+
+projectid: "runwayclub"
