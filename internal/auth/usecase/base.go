@@ -144,6 +144,7 @@ func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid 
 
 	if err != nil {
 		log.Printf("Error parsing token: %v", err)
+		return "", nil, domain.ErrInvalidToken
 	}
 
 	claims, ok := parsedToken.Claims.(jwtlib.MapClaims)
@@ -210,7 +211,6 @@ func (a *AuthUseCase) SignUpWithProvider(ctx context.Context, provider domain.Pr
 		if err != nil {
 			return err
 		}
-		return err
 	}
 	// look for existing username
 	found, err := a.repo.GetById(ctx, uid)
@@ -239,7 +239,9 @@ func (a *AuthUseCase) SignInWithProvider(ctx context.Context, provider domain.Pr
 	if err != nil {
 		// second chance for custom verify token
 		uid, claims, err = a.customVerifyToken(ctx, token)
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
 	}
 	// get by username
 	user, err := a.repo.GetById(ctx, uid)
