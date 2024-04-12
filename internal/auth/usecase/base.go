@@ -144,6 +144,8 @@ type CustomClaims struct {
 	Name    string `json:"name"`
 	Email   string `json:"email"`
 	Picture string `json:"picture"`
+	Exp     int64  `json:"exp"`
+	Iss     string `json:"iss"`
 }
 
 func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid string, claims map[string]interface{}, err error) {
@@ -159,22 +161,15 @@ func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid 
 	}
 
 	// check expiration in seconds
-	exp, err := parsedClaims.GetExpirationTime()
-	if err != nil {
-		return "", nil, domain.ErrInvalidToken
-	}
 
-	if time.Now().UTC().Unix() > exp.UTC().Unix() {
+	if time.Now().UTC().Unix() > parsedClaims.Exp {
 		return "", nil, domain.ErrExpiredToken
 
 	}
 	// check issuer
-	issuer, err := parsedClaims.GetIssuer()
-	if err != nil {
-		return "", nil, domain.ErrInvalidToken
-	}
+	
 	// Must be "https://securetoken.google.com/<projectId>", where <projectId> is the same project ID used for aud above.
-	if issuer != fmt.Sprintf("https://securetoken.google.com/%s", a.projectId) {
+	if parsedClaims.Iss != fmt.Sprintf("https://securetoken.google.com/%s", a.projectId) {
 		return "", nil, domain.ErrInvalidIssuer
 	}
 
