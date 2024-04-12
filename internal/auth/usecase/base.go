@@ -138,32 +138,39 @@ func (a *AuthUseCase) CheckAuthWithProvider(ctx context.Context, provider domain
 	return true, nil
 }
 
+type CustomClaims struct {
+	jwtlib.MapClaims
+	Sub     string `json:"sub"`
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Picture string `json:"picture"`
+}
+
 func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid string, claims map[string]interface{}, err error) {
 
-	parsedToken, _, err := new(jwtlib.Parser).ParseUnverified(token, jwtlib.MapClaims{})
+	parsedClaims := &CustomClaims{}
+	_, _, err = new(jwtlib.Parser).ParseUnverified(token, parsedClaims)
+
+	log.Printf("parsedClaims: %v", parsedClaims)
 
 	if err != nil {
 		log.Printf("Error parsing token: %v", err)
 		return "", nil, domain.ErrInvalidToken
 	}
 
-	claims, ok := parsedToken.Claims.(jwtlib.MapClaims)
-	if !ok {
-		return "", nil, domain.ErrInvalidToken
-	}
 	// check expiration in seconds
-	exp, ok := claims["exp"].(int64)
-	if !ok {
+	exp, err := parsedClaims.GetExpirationTime()
+	if err != nil {
 		return "", nil, domain.ErrInvalidToken
 	}
 
-	if time.Now().UTC().Unix() > exp {
+	if time.Now().UTC().Unix() > exp.UTC().Unix() {
 		return "", nil, domain.ErrExpiredToken
 
 	}
 	// check issuer
-	issuer, ok := claims["iss"].(string)
-	if !ok {
+	issuer, err := parsedClaims.GetIssuer()
+	if err != nil {
 		return "", nil, domain.ErrInvalidToken
 	}
 	// Must be "https://securetoken.google.com/<projectId>", where <projectId> is the same project ID used for aud above.
@@ -171,25 +178,18 @@ func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid 
 		return "", nil, domain.ErrInvalidIssuer
 	}
 
-	uid, ok = claims["sub"].(string)
-	if !ok {
+	uid = parsedClaims.Sub
+	if uid == "" {
 		return "", nil, domain.ErrInvalidToken
 	}
-	// get name
-	name, ok := claims["name"].(string)
-	if !ok {
-		return "", nil, domain.ErrInvalidToken
-	}
+	name := parsedClaims.Name
 	// get email
-	email, ok := claims["email"].(string)
-	if !ok {
+	email := parsedClaims.Email
+	if email == "" {
 		return "", nil, domain.ErrInvalidToken
 	}
 	// get picture
-	picture, ok := claims["picture"].(string)
-	if !ok {
-		return "", nil, domain.ErrInvalidToken
-	}
+	picture := parsedClaims.Picture
 	return uid, map[string]interface{}{
 		"name":    name,
 		"email":   email,
