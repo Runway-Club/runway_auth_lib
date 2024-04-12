@@ -140,9 +140,12 @@ func (a *AuthUseCase) CheckAuthWithProvider(ctx context.Context, provider domain
 
 func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid string, claims map[string]interface{}, err error) {
 
-	parsedToken, _ := jwtlib.Parse(token, func(token *jwtlib.Token) (interface{}, error) {
-		return []byte("AllYourBase"), nil
-	})
+	parsedToken, _, err := new(jwtlib.Parser).ParseUnverified(token, jwtlib.MapClaims{})
+
+	if err != nil {
+		log.Printf("Error parsing token: %v", err)
+	}
+
 	claims, ok := parsedToken.Claims.(jwtlib.MapClaims)
 	if !ok {
 		return "", nil, domain.ErrInvalidToken
@@ -152,7 +155,8 @@ func (a *AuthUseCase) customVerifyToken(ctx context.Context, token string) (uid 
 	if !ok {
 		return "", nil, domain.ErrInvalidToken
 	}
-	if time.Now().Unix() > exp {
+
+	if time.Now().UTC().Unix() > exp {
 		return "", nil, domain.ErrExpiredToken
 
 	}
