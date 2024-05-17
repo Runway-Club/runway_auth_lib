@@ -106,3 +106,14 @@ func CheckAuthWithProvider(ctx context.Context, token string) (bool, error) {
 func VerifyToken(ctx context.Context, token string) (auth *domain.Auth, err error) {
 	return authUseCase.Verify(ctx, token)
 }
+
+func DeleteAuth(ctx context.Context, id string) error {
+	// delete on provider
+	if provider != nil {
+		err := provider.Delete(ctx, id)
+		if err != nil {
+			return err
+		}
+	}
+	return authUseCase.Delete(ctx, id)
+}

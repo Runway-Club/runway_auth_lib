@@ -20,6 +20,10 @@ func (g *GoogleProvider) VerifyToken(ctx context.Context, token string) (uid str
 	return verifiedToken.UID, verifiedToken.Claims, nil
 }
 
+func (g *GoogleProvider) Delete(ctx context.Context, uid string) error {
+	return g.client.DeleteUser(ctx, uid)
+}
+
 func NewGoogleProvider(ctx context.Context, configFileName string) *GoogleProvider {
 	// initialize firebase app
 	opt := option.WithCredentialsFile(configFileName)
